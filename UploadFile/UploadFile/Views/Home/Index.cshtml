@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<br /><br /><br />
+<textarea id="mytextarea" class = "form-control"></textarea>
+
+@section scripts {
+    
+    <script src="~/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: "#mytextarea",
+            menubar: false,
+            plugins: [
+                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking save table contextmenu directionality',
+                'emoticons template paste textcolor colorpicker textpattern imagetools codesample toc'
+            ],
+            toolbar1: 'insertfile undo redo | bold italic | forecolor | link image',
+            codesample_languages: [
+                { text: 'JavaScript', value: 'javascript' },
+                { text: 'CSS', value: 'css' },
+                { text: 'C#', value: 'csharp' },
+                { text: 'C++', value: 'cpp' },
+                { text: 'TypeScript', value: 'javascript' },
+                { text: 'Order language', value: 'markup' }
+            ],
+            image_title: true,
+            automatic_uploads: false,
+            file_picker_types: 'image',
+            file_picker_callback: function (cb, value, meta) {
+               
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+
+                input.onchange = function () {
+                    var file = this.files[0];
+                    var formData = new FormData();
+                    formData.append('files', file);
+                   
+                    $.ajax({
+                        url: '/api/uploadfile/',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            console.log(data);
+                            cb(data.url, { title: file.name });
+                        }
+                    });
+                };
+
+                input.click();
+            },
+        });
+       
+    </script>
+}
